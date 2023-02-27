@@ -3,6 +3,7 @@ package study.datajpa.member.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -60,6 +61,40 @@ class MemberRepositoryTest {
             System.out.println("== team 초기화 후(프록시 객체 초기화, 값 세팅 완료) ==");
         }
 
+    }
+
+    @Test
+    @DisplayName("쿼리 메서드 테스트")
+    public void t3() {
+        //given
+        Member member1 = new Member("springA", 30);
+        Member member2 = new Member("springA", 14);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        //when
+        List<Member> members = memberRepository.findByNameAndAgeGreaterThan("springA", 14);
+
+        //then
+        members.stream()
+                        .forEach(System.out::println);
+        Assertions.assertThat(members.size()).isEqualTo(1);
+    }
+    @Test
+    @DisplayName("@Query 메서드 테스트")
+    public void t4() {
+        //given
+        Member member1 = new Member("springA", 30);
+        Member member2 = new Member("springA", 14);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        //when
+        Member member = memberRepository.findNameAndAgeIsSame("springA", 14);
+
+        //then
+        Assertions.assertThat(member.getName()).isEqualTo(member2.getName());
+        Assertions.assertThat(member.getAge()).isEqualTo(member2.getAge());
     }
 
 }
