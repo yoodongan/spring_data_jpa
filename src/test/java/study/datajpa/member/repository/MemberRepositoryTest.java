@@ -10,8 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.member.Member;
+import study.datajpa.member.MemberDto;
 import study.datajpa.team.Team;
 
+import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
@@ -96,5 +98,53 @@ class MemberRepositoryTest {
         Assertions.assertThat(member.getName()).isEqualTo(member2.getName());
         Assertions.assertThat(member.getAge()).isEqualTo(member2.getAge());
     }
+    @Test
+    public void t5() {
+        //given
+        Member member1 = new Member("springA", 30);
+        memberRepository.save(member1);
+
+        //when
+        boolean flag = memberRepository.existsMemberByName("springA");
+
+        //then
+        Assertions.assertThat(flag).isEqualTo(true);
+    }
+    @Test
+    @DisplayName("DTO 테스트")
+    public void t6() {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member member = new Member("springA", 21);
+        member.changeTeam(teamA);
+        em.persist(member);
+
+        //when
+        List<MemberDto> memberDto = memberRepository.findMemberDto();
+        memberDto.forEach(System.out::println);
+
+        //then
+    }
+    @Test
+    public void t7() {
+        //given
+        Member member1 = new Member("springA", 21);
+        Member member2 = new Member("springB", 23);
+        Member member3 = new Member("springC", 18);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+        //when
+        List<Member> byNames = memberRepository.findByNames(Arrays.asList("springA", "springC"));
+        for (Member byName : byNames) {
+            System.out.println(byName.getName());
+        }
+        //then
+    }
+
+    
 
 }
