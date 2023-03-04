@@ -1,6 +1,8 @@
 package study.datajpa.member.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -29,4 +31,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select m from Member m "
             +"where m.name in :names")
     public List<Member> findByNames(List<String> names);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Member m set m.age = m.age + 1 " +
+    "where m.age >= :age")
+    public int bulkAgePlus(@Param("age") int age);
+
+
+    @Query("select m from Member m left join fetch m.team")
+    public List<Member> findMemberFetchJoin();
 }

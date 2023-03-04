@@ -144,6 +144,51 @@ class MemberRepositoryTest {
         }
         //then
     }
+    @Test
+    public void t8() {
+        //given
+        Member member1 = new Member("springA", 19);
+        Member member2 = new Member("springB", 20);
+        Member member3 = new Member("springC", 22);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+        //when
+        int result = memberRepository.bulkAgePlus(19);
+
+        Member member = memberRepository.findById(member3.getId()).get();
+        System.out.println(member.getAge());
+
+        //then
+        Assertions.assertThat(result).isEqualTo(3);
+
+    }
+    @Test
+    public void t9() {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+        Team teamB = new Team("teamB");
+        em.persist(teamB);
+
+        Member member1 = new Member("springA", 19, teamA);
+        memberRepository.save(member1);
+        Member member2 = new Member("springB", 20, teamA);
+        memberRepository.save(member2);
+        Member member3 = new Member("springC", 19, teamB);
+        memberRepository.save(member3);
+        //when
+        em.flush();
+        em.clear();
+
+        List<Member> members = memberRepository.findMemberFetchJoin();
+        for (Member member : members) {
+            System.out.println(member.getTeam().getName());
+        }
+
+        //then
+    }
 
     
 
